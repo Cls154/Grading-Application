@@ -1,3 +1,3 @@
 <template>
-  <h1>login vue</h1>
+  <h1 class="bg-[#657435]">login vue</h1>
 </template>
