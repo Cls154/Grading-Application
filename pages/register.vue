@@ -10,18 +10,19 @@
         </p>
       
 
-        <form>
+        <form @submit.prevent="submit">
           <div class="mt-6">
             <label class="text-[#F4F4F5] block text-sm mb-1">Email Address</label>
-            <input type="email" placeholder="you@email.com" class="bg-[#27272A] w-full px-4 py-2 rounded border border-[#3F3F46] text-white placeholder:text-zinc-700 text-sm"/>
+            <input v-model="email" type="email" placeholder="you@email.com" class="bg-[#27272A] w-full px-4 py-2 rounded border border-[#3F3F46] text-white placeholder:text-zinc-700 text-sm"/>
           </div>
           <div class="mt-4">
             <label class="text-[#F4F4F5] block text-sm mb-1">Password</label>
-            <input type="password" placeholder="************" class="bg-[#27272A] w-full px-4 py-2 rounded border border-[#3F3F46] text-white placeholder:text-zinc-700 text-sm"/>
+            <input v-model="password" type="password" placeholder="************" class="bg-[#27272A] w-full px-4 py-2 rounded border border-[#3F3F46] text-white placeholder:text-zinc-700 text-sm"/>
           </div>
           <div class="mt-4">
             <label class="text-[#F4F4F5] block text-sm mb-1">Role</label>
-            <select class="bg-[#27272A] w-full px-4 py-2 rounded border border-[#3F3F46] text-white text-sm">
+            <select v-model="role" class="bg-[#27272A] w-full px-4 py-2 rounded border border-[#3F3F46] text-white text-sm">
+              <option disabled value="">Select option</option>
               <option value="student">Student</option>
               <option value="educator">Educator</option>
             </select>
@@ -37,5 +38,44 @@
 </template>
 
 <script setup>
+  import Swal from 'sweetalert2';
+
+  let email = ref('');
+  let password = ref('');
+  let role = ref('');
+
+  async function submit() {
+    try {
+      const response = await $fetch('/api/user', {
+        method: 'POST',
+        body: {
+          email: email.value,
+          password: password.value,
+          role: role.value,
+        }
+      })
+
+      const { isConfirmed } = await Swal.fire({
+        title: 'Success',
+        text: 'Account created successfully',
+        icon: 'Success',
+        confirmButtonText: 'Close',
+      })
+
+      if (isConfirmed) {
+        navigateTo('/');
+      }
+
+      console.log(response);
+    } catch (e) {
+      Swal.fire({
+        title: 'Error',
+        text: e.response?._data?.message,
+        icon: 'error',
+        confirmButtonText: 'Close',
+      }) 
+    }
+  }
+
 
 </script>
