@@ -64,9 +64,9 @@
 
       if (isConfirmed) {
         navigateTo('/');
+        console.log(response.role);
       }
 
-      console.log(response);
     } catch (e) {
       Swal.fire({
         title: 'Error',

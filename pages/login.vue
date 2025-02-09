@@ -54,6 +54,7 @@
 
       if (isConfirmed) {
         navigateTo('/');
+        console.log(response.role);
       }
 
     } catch (e) {
