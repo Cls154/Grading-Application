@@ -2,7 +2,7 @@
   <div class="flex bg-black h-screen">
 
       <div class="bg-zinc-900 w-[516px] p-12 flex flex-col justify-center">
-        <h1 class="text-white">Sign up for a free account</h1>
+        <h1 class="text-white font-bold">Sign up for a free account</h1>
         <p class="text-zinc-300 text-sm mt-0.5">
           Already registered? 
           <nuxt-link to="/login" class="text-[#FFAC00] font-bold underline">Log in</nuxt-link> 
@@ -28,8 +28,8 @@
             </select>
           </div>
           <div>
-            <button class="w-full bg-[#FFAC00] mt-6 py-2 rounded-full">
-              Sign Up
+            <button class="w-full bg-[#FFAC00] mt-6 py-2 rounded-full font-bold">
+              Sign up
             </button>
           </div>
         </form>
@@ -58,7 +58,7 @@
       const { isConfirmed } = await Swal.fire({
         title: 'Success',
         text: 'Account created successfully',
-        icon: 'Success',
+        icon: 'success',
         confirmButtonText: 'Close',
       })
 

@@ -1,4 +1,4 @@
-// /api/user POST
+// /api/login POST
 
 import jwt from 'jsonwebtoken';
 import bcyrpt from 'bcryptjs';
@@ -29,32 +29,30 @@ export default defineEventHandler(async (event) => {
         message: 'Password must be 8 characters'
       })
     }
+    
 
-    const salt = await bcyrpt.genSalt(10);
-    const passwordHash = await bcyrpt.hash(body.password, salt);
-
-    const user = await prisma.user.create({
-      data: {
+    const user = await prisma.user.findUnique({
+      where: {
         email: body.email,
-        password: passwordHash,
-        role: body.role,
       }
-    })
+    });
 
-    const token = jwt.sign({id: user.id, role: user.role }, process.env.JWT_SECRET);
+    const isValid = await bcyrpt.compare(body.password, user.password);
+
+    if (!isValid) {
+      throw createError({
+        statusCode: 400,
+        message: 'Username or password is invalid',
+      })
+    }
+
+    const token = jwt.sign({id: user.id, role: user.role}, process.env.JWT_SECRET);
     setCookie(event, 'userJWT', token);
 
     return { data: 'success' };
 
   } catch (e) {
-    
-    if (e.code === 'P2002') {
-      throw createError({
-        statusCode: 409,
-        message: 'This email already exists',
-      })
-    }
-
+    console.log(e);
     throw e;
   }
 })
