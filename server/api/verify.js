@@ -3,6 +3,12 @@
 import jwt from 'jsonwebtoken';
 
 export default defineEventHandler(async (event) => {
+  const apiKey = getHeader(event, 'x-api-key');
+  
+  if (apiKey !== process.env.API_KEY) {
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorised' });
+  }
+
   const token = getCookie(event, 'userJWT');
 
   if (!token) {

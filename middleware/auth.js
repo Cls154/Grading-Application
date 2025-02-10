@@ -1,10 +1,14 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  // if (import.meta.server)
-  //   return;
+  if (import.meta.client)
+    return;
 
   try {
-    const response = await $fetch('/api/verify', { headers: useRequestHeaders() });
-    console.log(response);
+    const response = await $fetch('/api/verify', { 
+      headers: {
+        ...useRequestHeaders(),
+        'x-api-key': process.env.API_KEY
+      }
+    });
 
     if (!response.valid) {
       if (to.path !== '/login') {
