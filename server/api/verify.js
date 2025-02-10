@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
   }
   
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
     return { valid: true, user: decoded }
   } catch (e) {
     console.log(e);

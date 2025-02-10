@@ -13,10 +13,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
+// user module relation in erd is wrong it is many to many and therefore needs a join table
 model User {
   id Int @id @default(autoincrement())
   email String @unique
   password String
   role String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  userModule User_Module[]
 }
+
+model Module {
+  id Int @id @default(autoincrement())
+  name String
+  groupSize Int
+  groupNum Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  userModule User_Module[]
+}
+
+model User_Module {
+  userId   Int
+  moduleId Int
+
+  user     User    @relation(fields: [userId], references: [id])
+  module   Module  @relation(fields: [moduleId], references: [id])
+
+  @@id([userId, moduleId]) // Composite primary key
+}
+
