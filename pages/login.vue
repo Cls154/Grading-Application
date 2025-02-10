@@ -53,8 +53,7 @@
       })
 
       if (isConfirmed) {
-        navigateTo('/');
-        console.log(response.role);
+        navigateTo(`/${response.role}`);
       }
 
     } catch (e) {
