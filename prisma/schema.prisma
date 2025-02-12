@@ -29,7 +29,7 @@ model Module {
   id Int @id @default(autoincrement())
   name String
   groupSize Int
-  groupNum Int
+  groupNum Int // remove this as class size varies may need more or less groups depending on size of that year
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 

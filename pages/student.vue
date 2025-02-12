@@ -2,7 +2,7 @@
   <div class="flex bg-zinc-900 h-screen">
 
       <div class="bg-black w-[516px] p-12 flex flex-col">
-        <h1 class="text-white font-bold">My Groups</h1>
+        <h1 class="text-white font-bold text-lg">My Groups</h1>
         <p class="text-zinc-300 text-sm p-2 mt-3.5">
           You are not in a group. <br>
           Please assign yourself to the desired group
@@ -42,31 +42,16 @@
         </form> -->
       </div>
 
-      <div class="w-full m-12">
-
-        <div>
-          <h3>title</h3>
-          <p>group 1</p>
-          <p>group 2</p>
-          <p>group 3</p>
-          <p>group 4</p>
-          <p>group 5</p>
-          <p>group 6</p>
+      <div class="w-full p-12 space-y-12 overflow-scroll">
+        <div v-for="mod in modulesData" :key="mod.id">
+          <ModuleList :moduleName=mod.name :moduleGroups=mod.groups :groupCapacity=mod.groupSize />
         </div>
-
-        <div>
-          <h3>title</h3>
-          <p>group 1</p>
-          <p>group 2</p>
-          <p>group 3</p>
-        </div>
-
       </div>
   </div>
 </template>
 
 <script setup>
-  let modules;
+  const modulesData = ref([]);
 
 
   definePageMeta({
@@ -74,7 +59,12 @@
   })
 
   onMounted(async () => {
-    modules = await $fetch('/api/modules');
-    console.log(modules);
+    try {
+      const response = await $fetch('/api/modules');
+      modulesData.value = response.data;
+      console.log(modulesData.value);
+    } catch (error) {
+      console.log(error);
+    }
   })
 </script>
