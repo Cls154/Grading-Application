@@ -5,14 +5,13 @@ import prisma from '~/lib/prisma';
 
 export default defineEventHandler(async (event) => {
   try {
-    // Get user JWT and verify it
     const cookie = parseCookies(event);
     const token = cookie.userJWT;
 
     if (!token) {
       throw createError({
         statusCode: 401,
-        statusMessage: 'Not Authorised to access modules'
+        statusMessage: 'Not Authorised'
       })
     }
 
@@ -28,9 +27,7 @@ export default defineEventHandler(async (event) => {
           include: {
             groups: {
               include: {
-                _count: {
-                  select: { userGroup: true }
-                }
+                userGroup: true,
               }
             },
           }
@@ -38,7 +35,16 @@ export default defineEventHandler(async (event) => {
       }
     })
     
-    const modules = userModules.map(userModule => userModule.module);
+
+    const modules = userModules.map(userModule => {
+      return {
+        ...userModule.module,
+        groups: userModule.module.groups.map(group => ({
+          ...group,
+          isPartOf: group.userGroup.some(userGroup => userGroup.userId === decoded.id)
+        }))
+      }
+    });
 
     // Send user modules to frontend
     return { status: 'Success', data: modules };

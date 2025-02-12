@@ -62,7 +62,7 @@
     try {
       const response = await $fetch('/api/modules');
       modulesData.value = response.data;
-      console.log(modulesData.value);
+      console.log(response);
     } catch (error) {
       console.log(error);
     }
