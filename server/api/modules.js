@@ -24,7 +24,17 @@ export default defineEventHandler(async (event) => {
         userId: decoded.id
       },
       include: {
-        module: true,
+        module: {
+          include: {
+            groups: {
+              include: {
+                _count: {
+                  select: { userGroup: true }
+                }
+              }
+            },
+          }
+        },
       }
     })
     
