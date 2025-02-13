@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
     });
 
     // Send user modules to frontend
-    return { status: 'Success', data: modules };
+    return { status: 'Success', user: decoded.id, data: modules };
 
   } catch (e) {
     // Log the error for debugging

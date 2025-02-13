@@ -37,7 +37,7 @@
   })
 
   const isAnyGroupPartOf = computed(() => {
-    return props.moduleGroups.some(group => group.isPartOf)
+    return props.moduleGroups.some(group => group.isPartOf);
   })
 
   async function assignUser(groupId) {
