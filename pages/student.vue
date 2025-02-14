@@ -1,7 +1,7 @@
 <template>
-  <div class="flex bg-zinc-900 h-screen">
+  <main class="flex bg-zinc-900 h-screen">
     <!-- Sidebar -->
-    <div class="bg-black w-[516px] p-12 flex flex-col">
+    <section class="bg-black w-[516px] p-12 flex flex-col">
       <!-- SidebarTitle -->
       <div class="flex items-center justify-between mb-5">
         <h1 class="text-white font-bold text-lg">My Groups</h1>
@@ -36,23 +36,29 @@
         </div>
       </div>
       <!-- /SidebarContent -->
-    </div>
+    </section>
     <!-- /Sidebar -->
 
     <!-- MainPage -->
-    <div class="w-full p-12 space-y-12 overflow-scroll">
+    <section class="w-full p-12 space-y-12 overflow-scroll">
+
+      <!-- IndividualContributionForm -->
+      <div v-if="typeof selectedGroup.id === 'number'">
+        <h1 class="text-white">Contribution Form</h1>
+        <p class="text-white">{{ selectedGroup }}</p>
+      </div>
+      <!-- /IndividualContributionForm -->
 
       <!-- ModuleGroupAssignment -->
-      <div v-for="mod in modulesData" :key="mod.id">
+      <div v-else v-for="mod in modulesData" :key="mod.id">
         <ModuleList :moduleName=mod.name :moduleGroups=mod.groups :groupCapacity=mod.groupSize />
       </div>
       <!-- /ModuleGroupAssignment -->
 
-
-    </div>
+    </section>
     <!-- /MainPage -->
 
-  </div>
+  </main>
 </template>
 
 <script setup>
@@ -77,7 +83,7 @@
           myGroup: module.groups.find(group => group.isPartOf) || null
         }
       ))
-      .filter(module => module.groups !== null);
+      .filter(module => module.myGroup !== null);
   });
     
 
@@ -86,8 +92,7 @@
       const response = await $fetch('/api/modules');
       modulesData.value = response.data;
       userId.value = response.user;
-
-      console.log(selectedGroup);
+      console.log(modulesData.value);
     } catch (error) {
       console.log(error);
     }
