@@ -44,8 +44,12 @@
 
       <!-- IndividualContributionForm -->
       <div v-if="typeof selectedGroup.id === 'number'">
-        <h1 class="text-white">Contribution Form</h1>
-        <p class="text-white">{{ selectedGroup }}</p>
+        <div class="text-white font-bold text-lg mb-3 space-x-10">
+          <span>{{ selectedGroup.module }}</span>
+          <span>{{ `Group: ${selectedGroup.id}` }}</span>
+          <span>Contribution Form</span>
+        </div>
+        <IndividualContributionForm :groupId=selectedGroup.id />
       </div>
       <!-- /IndividualContributionForm -->
 
@@ -67,7 +71,10 @@
   const userId = ref(Number);
 
   function setGroup(group) {
-    selectedGroup.value = group.myGroup;
+    selectedGroup.value = {
+      ...group.myGroup,
+      module: group.moduleName
+    };
   }
 
   definePageMeta({
@@ -92,7 +99,6 @@
       const response = await $fetch('/api/modules');
       modulesData.value = response.data;
       userId.value = response.user;
-      console.log(modulesData.value);
     } catch (error) {
       console.log(error);
     }

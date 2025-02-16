@@ -1,10 +1,12 @@
-// /api/modules GET
+// /api/group/:id GET
 
 import jwt from 'jsonwebtoken';
-import prisma from '~/lib/prisma';
+import prisma from "~/lib/prisma";
 
 export default defineEventHandler(async (event) => {
   try {
+    const id = getRouterParam(event, 'id');
+    
     const cookie = parseCookies(event);
     const token = cookie.userJWT;
 
@@ -17,45 +19,43 @@ export default defineEventHandler(async (event) => {
 
     const decoded = await jwt.verify(token, process.env.JWT_SECRET);
 
-    // Find all the modules associated with that user
-    const userModules = await prisma.user_Module.findMany({
+    const group = await prisma.groups.findUnique({
       where: {
-        userId: decoded.id
+        id: Number(id),
       },
       include: {
-        module: {
+        userGroup: {
           include: {
-            groups: {
-              include: {
-                userGroup: true,
-              }
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+              },
             },
-          }
+          },
         },
-      }
+      },
     })
 
-    if (!userModules) {
+    if (!group) {
       throw createError({
         statusCode: 404,
-        message: 'Could not find user modules'
+        message: 'Could not find group'
       })
     }
-    
-    const modules = userModules.map(userModule => {
-      return {
-        ...userModule.module,
-        groups: userModule.module.groups.map(group => ({
-          ...group,
-          isPartOf: group.userGroup.some(userGroup => userGroup.userId === decoded.id)
-        }))
-      }
-    });
 
-    // Send user modules to frontend
-    return { status: 'Success', user: decoded.id, data: modules };
+    const myGroup = {
+      ...group,
+      userGroup: group.userGroup.map(ug => ({
+        ...ug,
+        isMe: ug.userId === decoded.id,
+      }))
+    }
 
-  } catch (e) {
+    return { status: 'Success', data: myGroup }
+
+  } catch (error) {
     // Log the error for debugging
     console.error('Error fetching user modules:', e);
 
