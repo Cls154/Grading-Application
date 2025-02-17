@@ -67,10 +67,10 @@
     // console.log(myGroup.value);
   })
 
-  watch(groupId, async (newVal, oldVal) => {
-    const response = await getMyGroup();
-    myGroup.value = response.data;
-    // console.log(myGroup.value);
-  })
+  // watch(groupId, async (newVal, oldVal) => {
+  //   const response = await getMyGroup();
+  //   myGroup.value = response.data;
+  //   // console.log(myGroup.value);
+  // })
   
 </script>

@@ -4,37 +4,48 @@
     <section class="bg-black w-[516px] p-12 flex flex-col">
       <!-- SidebarTitle -->
       <div class="flex items-center justify-between mb-5">
-        <h1 class="text-white font-bold text-lg">My Groups</h1>
-        <button class="text-[#DA9914] text-xs font-bold space-x-2 cursor-pointer" :class="
+        <button @click="setPage('group')" class="text-white font-bold text-lg" :class="
           {
-            'inline-flex items-center' : typeof selectedGroup.id === 'number',
-            'hidden' : typeof selectedGroup.id !== 'number'
-          }" @click="selectedGroup = {}">
-          <LeftArrow class="w-4 h-4"/>
-          <span>Back</span>
-        </button>
+            'border-b-2 border-[#A1842C]': selectedPage === 'group',
+            'hover:border-b-2 border-[#A1842C]/50': selectedPage !== 'group',
+          }"
+        >My Groups</button>
+        <button @click="setPage('contribution')" class="text-white font-bold text-lg" :class="
+          {
+            'border-b-2 border-[#A1842C]': selectedPage === 'contribution',
+            'hover:border-b-2 border-[#A1842C]/50': selectedPage !== 'contribution',
+          }"
+        >My Contributions</button>
       </div>
       <!-- /SidebarTitle -->
 
       <!-- SidebarContent -->
-      <p v-if="userGroups.length === 0" class="text-zinc-300 text-sm p-2 mt-3.5">
-        You are not in a group. <br>
-        Please assign yourself to the desired group
-      </p>
-      <div v-else v-for="group in userGroups">
-        <div class="mt-5 p-2 rounded-lg cursor-pointer" :class="
-          { 
-            'bg-[#A1842C]': group.myGroup.id === selectedGroup.id,
-            'hover:bg-[#A1842C]/50' : group.myGroup.id !== selectedGroup.id,
-          }" @click="setGroup(group)">
-          <h3 class="text-[#F4F4F5] text-sm font-bold truncate">{{ group.moduleName }}</h3>
-          <div class="leading-none truncate text-[#C2C2C5]">
-            <span class="text-[#F4F4F5] text-xs mr-4">Group {{ group.myGroup.id }}</span>
-            <span class="text-[#C2C2C5] text-xs mr-4">{{ `${group.myGroup.userGroup.length}/${group.moduleGroupSize}` }} Members</span>
-            <span class="text-[#C2C2C5] text-xs">Joined {{ new Date(group.myGroup.userGroup.find(g => g.userId === userId).updatedAt).toLocaleString('en-GB') }}</span>
+      <div v-if="selectedPage === 'group'">
+        <p v-if="userGroups.length === 0" class="text-zinc-300 text-sm p-2 mt-3.5">
+          You are not in a group. <br>
+          Please assign yourself to a group
+        </p>
+        <div v-else v-for="group in userGroups">
+          <div class="mt-5 p-2 rounded-lg">
+            <h3 class="text-[#F4F4F5] text-sm font-bold truncate">{{ group.moduleName }}</h3>
+            <div class="leading-none truncate text-[#C2C2C5]">
+              <span class="text-[#F4F4F5] text-xs mr-4">Group {{ group.myGroup.id }}</span>
+              <span class="text-[#C2C2C5] text-xs mr-4">{{ `${group.myGroup.userGroup.length}/${group.moduleGroupSize}` }} Members</span>
+              <span class="text-[#C2C2C5] text-xs">Joined {{ new Date(group.myGroup.userGroup.find(g => g.userId === userId).updatedAt).toLocaleString('en-GB') }}</span>
+            </div>
           </div>
         </div>
       </div>
+
+      <div v-else-if="selectedPage === 'contribution'" v-for="group in userGroups">
+        {{ console.log(group) }} // need to modify database to include hasSubmittedContributionForm to display who has and hasnt peer evaluated
+      </div>
+
+      <!-- NEEDS TO BE WORKED ON -->
+      <div v-else>
+        THIS PAGE DOES NOT EXSIST
+      </div>
+
       <!-- /SidebarContent -->
     </section>
     <!-- /Sidebar -->
@@ -42,22 +53,27 @@
     <!-- MainPage -->
     <section class="w-full p-12 space-y-12 overflow-scroll">
 
-      <!-- IndividualContributionForm -->
-      <div v-if="typeof selectedGroup.id === 'number'">
-        <div class="text-white font-bold text-lg mb-3 space-x-10">
-          <span>{{ selectedGroup.module }}</span>
-          <span>{{ `Group: ${selectedGroup.id}` }}</span>
-          <span>Contribution Form</span>
-        </div>
-        <IndividualContributionForm :groupId=selectedGroup.id />
-      </div>
-      <!-- /IndividualContributionForm -->
-
       <!-- ModuleGroupAssignment -->
-      <div v-else v-for="mod in modulesData" :key="mod.id">
+      <div v-if="selectedPage === 'group'" v-for="mod in modulesData" :key="mod.id">
         <ModuleList :moduleName=mod.name :moduleGroups=mod.groups :groupCapacity=mod.groupSize />
       </div>
       <!-- /ModuleGroupAssignment -->
+
+      <!-- IndividualContributionForm -->
+      <div v-else-if="selectedPage === 'contribution'" v-for="group in userGroups">
+        <div class="text-white font-bold text-lg mb-3 space-x-10">
+          <span>{{ group.moduleName }}</span>
+          <span>{{ `Group: ${group.myGroup.id}` }}</span>
+          <span>Contribution Form</span>
+        </div>
+        <IndividualContributionForm :groupId=group.myGroup.id />
+      </div>
+      <!-- /IndividualContributionForm -->
+
+      <!-- NEEDS TO BE WORKED ON -->
+      <div v-else>
+        THIS PAGE DOES NOT EXSIST
+      </div>
 
     </section>
     <!-- /MainPage -->
@@ -66,16 +82,15 @@
 </template>
 
 <script setup>
-  const selectedGroup = ref({});
+  const selectedPage = ref('group');
+
   const modulesData = ref([]);
   const userId = ref(Number);
 
-  function setGroup(group) {
-    selectedGroup.value = {
-      ...group.myGroup,
-      module: group.moduleName
-    };
+  function setPage(page) {
+    selectedPage.value = page;
   }
+
 
   definePageMeta({
     middleware: 'auth',
@@ -99,6 +114,8 @@
       const response = await $fetch('/api/modules');
       modulesData.value = response.data;
       userId.value = response.user;
+
+      console.log(selectedPage.value)
     } catch (error) {
       console.log(error);
     }
