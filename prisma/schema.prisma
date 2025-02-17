@@ -25,6 +25,7 @@ model User {
 
   userModule User_Module[]
   userGroup User_Group[]
+  contributionForms Contribution_Forms[]
 }
 
 model Module {
@@ -69,5 +70,30 @@ model User_Group {
 
   user User @relation(fields: [userId], references: [id])
   group Groups @relation(fields: [groupId], references: [id])
+
+  myContribution My_Contribution[]
 }
 
+model My_Contribution {
+  id Int @id @default(autoincrement())
+  userGroupId Int
+  myUserReflection String @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  userGroup User_Group @relation(fields: [userGroupId], references: [id])
+
+  contributionForms Contribution_Forms[]
+}
+
+model Contribution_Forms {
+  id Int @id @default(autoincrement())
+  contributionsId Int
+  targetUserId Int
+  targetUserContribution Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  myContribution My_Contribution @relation(fields: [contributionsId], references: [id])
+  targetUser User @relation(fields: [targetUserId], references: [id])
+}
