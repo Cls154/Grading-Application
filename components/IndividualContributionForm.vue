@@ -48,29 +48,32 @@
         }
       })
 
-    } catch (e) {
-      console.error(e);
-    }
-  }
+      const { isConfirmed } = await Swal.fire({
+        title: 'Success',
+        text: 'Successfully submitted contibution form',
+        icon: 'success',
+        confirmButtonText: 'Close',
+      })
 
-  async function getMyGroup() {
-    try {
-      return await $fetch(`/api/group/${groupId.value}`);
-    } catch (error) {
-      return console.error(error);
+      // if isConfirmed disable all inputs and gray out entire styling
+
+    } catch (e) {
+      Swal.fire({
+        title: 'Error',
+        text: e.response?._data?.message,
+        icon: 'error',
+        confirmButtonText: 'Close',
+      }) 
     }
   }
 
   onMounted(async () => {
-    const response = await getMyGroup();
-    myGroup.value = response.data;
-    // console.log(myGroup.value);
+    try {
+      const response = await $fetch(`/api/group/${groupId.value}`);
+      myGroup.value = response.data;
+    } catch (error) {
+      console.error(error);
+    }
   })
-
-  // watch(groupId, async (newVal, oldVal) => {
-  //   const response = await getMyGroup();
-  //   myGroup.value = response.data;
-  //   // console.log(myGroup.value);
-  // })
   
 </script>

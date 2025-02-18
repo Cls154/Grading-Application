@@ -1,5 +1,7 @@
 // /api/userGroup POST
 
+// Error Handling in here needed
+
 import jwt from 'jsonwebtoken';
 import prisma from '~/lib/prisma';
 
@@ -21,7 +23,8 @@ export default defineEventHandler(async (event) => {
     const userGroup = await prisma.user_Group.create({
       data: {
         userId: decoded.id,
-        groupId: body.groupId
+        groupId: body.groupId,
+        hasSubmitted: false,
       }
     })
 

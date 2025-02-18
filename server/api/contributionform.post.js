@@ -20,25 +20,36 @@ export default defineEventHandler(async (event) => {
 
     const { myUserGroup, personalReflection, contributions } = body;
     
-    const myContribution = await prisma.my_Contribution.create({
-      data: {
-        userGroupId: myUserGroup,
-        myUserReflection: personalReflection,
-      }
-    })
-
-    for (const userId in contributions) {
-      await prisma.contribution_Forms.create({
+    await prisma.$transaction(async (prisma) => {
+      const myContribution = await prisma.my_Contribution.create({
         data: {
-          contributionsId: myContribution.id,
-          targetUserId: Number(userId),
-          targetUserContribution: contributions[userId],
+          userGroupId: myUserGroup,
+          myUserReflection: personalReflection,
         }
       })
-    }
 
+      const contributionEntries = Object.entries(contributions).map(([userId, value]) => ({
+        contributionsId: myContribution.id,
+        targetUserId: Number(userId),
+        targetUserContribution: value,
+      }))
 
-    return { status: 'Success', message: `` };
+      await prisma.contribution_Forms.createMany({
+        data: contributionEntries,
+      })
+
+      await prisma.user_Group.update({
+        where: {
+          id: myUserGroup
+        },
+        data: {
+          hasSubmitted: true, // throw error is already true
+        }
+      })
+    })
+
+    
+    return { status: 'Success', message: `successfully submitted contributions` };
 
   } catch (e) {
     // Log the error for debugging

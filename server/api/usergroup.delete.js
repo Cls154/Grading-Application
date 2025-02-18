@@ -1,5 +1,7 @@
 // /api/userGroup DELETE
 
+// Error handling needed in here
+
 import jwt from 'jsonwebtoken';
 import prisma from '~/lib/prisma';
 

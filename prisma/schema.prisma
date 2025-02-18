@@ -65,6 +65,7 @@ model User_Group {
   id Int @id @default(autoincrement())
   userId Int
   groupId Int
+  hasSubmitted Boolean
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 

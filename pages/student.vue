@@ -37,8 +37,8 @@
         </div>
       </div>
 
-      <div v-else-if="selectedPage === 'contribution'" v-for="group in userGroups">
-        {{ console.log(group) }} // need to modify database to include hasSubmittedContributionForm to display who has and hasnt peer evaluated
+      <div v-else-if="selectedPage === 'contribution'">
+        <!-- need to modify database to include hasSubmittedContributionForm to display who has and hasnt peer evaluated -->
       </div>
 
       <!-- NEEDS TO BE WORKED ON -->
@@ -115,7 +115,7 @@
       modulesData.value = response.data;
       userId.value = response.user;
 
-      console.log(selectedPage.value)
+      console.log(userGroups.value)
     } catch (error) {
       console.log(error);
     }
