@@ -7,13 +7,13 @@
           <h3 class="text-[#F4F4F5] font-bold leading-none">{{ `${userGroup.user.firstName} ${userGroup.user.lastName}` }}</h3>
           <span class="text-[#F4F4F5]/50 text-sm">up{{ userGroup.userId }}</span>
         </div>
-        <input v-model="contributions[userGroup.userId]" type="number" placeholder='50' class="bg-[#3F3F46] ml-5 px-3 w-18 rounded font-bold text-white placeholder:text-white/15 text-sm"/>
+        <input v-model="contributions[userGroup.userId]" @input="debouncedFn" type="number" placeholder='50' class="bg-[#3F3F46] ml-5 px-3 w-18 rounded font-bold text-white placeholder:text-white/15 text-sm"/>
       </div>
     </section>
 
     <section class="bg-[#3F3F46] rounded px-3 py-2 flex flex-col flex-grow">
       <h3 class="font-bold text-[#F4F4F5] mb-1">Personal Contribution Reflection</h3>
-      <textarea v-model="personalReflection" class="text-[#F4F4F5]/50 text-sm focus:outline-none resize-none flex-grow"></textarea>
+      <textarea v-model="personalReflection" @input="debouncedFn" class="text-[#F4F4F5]/50 text-sm focus:outline-none resize-none flex-grow"></textarea>
     </section>
 
     <section class="flex flex-col">
@@ -38,8 +38,23 @@
 
   const { groupId } = toRefs(props);
 
-  async function submit() {
-    
+  const debouncedFn = useDebounceFn(async () => {
+    await updateContributionForm()
+  }, 1000);
+
+  async function updateContributionForm() {
+    try {
+      const response = await $fetch(`/api/contributionform/${contributionsInput.value.id}`, {
+        method: 'PATCH',
+        body: {
+          personalReflection: personalReflection.value,
+          contributions: contributions.value,
+        }
+      });
+      console.log(response);
+    } catch (e) {
+
+    }
   }
 
   onMounted(async () => {

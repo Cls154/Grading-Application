@@ -60,6 +60,7 @@ export default defineEventHandler(async (event) => {
         id: myUserGroupId
       },
       select: {
+        id: true,
         myUserReflection: true,
         contributionForms: {
           select: {
@@ -69,8 +70,6 @@ export default defineEventHandler(async (event) => {
         }
       }
     })
-
-    console.log(contributionForms);
 
     return { status: 'Success', group: myGroup, contributionForm: contributionForms }
 
