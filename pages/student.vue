@@ -1,7 +1,7 @@
 <template>
   <main class="flex bg-zinc-900 h-screen">
     <!-- Sidebar -->
-    <section class="bg-black w-[516px] p-12 flex flex-col">
+    <section class="bg-black w-[516px] p-12 relative flex flex-col">
       <!-- SidebarTitle -->
       <div class="flex items-center justify-between mb-5">
         <button @click="setPage('group')" class="text-white font-bold text-lg" :class="
@@ -60,6 +60,8 @@
       </div>
 
       <!-- /SidebarContent -->
+
+      <button @click="logout" class="text-zinc-400 hover:text-white text-sm font-bold absolute bottom-0 right-0 px-8 py-4 cursor-pointer">Logout</button>
     </section>
     <!-- /Sidebar -->
 
@@ -102,6 +104,12 @@
 
   function setPage(page) {
     selectedPage.value = page;
+  }
+
+  function logout() {
+    const jwtCookie = useCookie('userJWT');
+    jwtCookie.value = null;
+    navigateTo('/login');
   }
 
 
