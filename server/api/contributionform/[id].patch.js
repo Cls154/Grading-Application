@@ -23,7 +23,9 @@ export default defineEventHandler(async (event) => {
     await prisma.$transaction([
       prisma.my_Contribution.update({
         where: { id: Number(id) },
-        data: { myUserReflection: body.personalReflection }
+        data: { 
+          myUserReflection: body.personalReflection
+        }
       }),
 
       ...Object.entries(body.contributions).map(([targetUserId, targetUserContribution]) =>
@@ -32,7 +34,9 @@ export default defineEventHandler(async (event) => {
             contributionsId: Number(id),
             targetUserId: Number(targetUserId),
           },
-          data: { targetUserContribution },
+          data: { 
+            targetUserContribution
+          },
         })
       )
     ]);

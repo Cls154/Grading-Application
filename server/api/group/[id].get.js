@@ -53,11 +53,11 @@ export default defineEventHandler(async (event) => {
       }))
     }
 
-    const myUserGroupId = myGroup.userGroup.find(ug => ug.isMe).id;
+    const myUserGroup = myGroup.userGroup.find(ug => ug.isMe);
 
     const contributionForms = await prisma.my_Contribution.findUnique({
       where: {
-        id: myUserGroupId
+        id: myUserGroup.id
       },
       select: {
         id: true,
@@ -71,7 +71,7 @@ export default defineEventHandler(async (event) => {
       }
     })
 
-    return { status: 'Success', group: myGroup, contributionForm: contributionForms }
+    return { status: 'Success', group: myGroup, userGroup: myUserGroup, contributionForm: contributionForms }
 
   } catch (e) {
     // Log the error for debugging
