@@ -53,9 +53,28 @@ export default defineEventHandler(async (event) => {
       }))
     }
 
-    return { status: 'Success', data: myGroup }
+    const myUserGroupId = myGroup.userGroup.find(ug => ug.isMe).id;
 
-  } catch (error) {
+    const contributionForms = await prisma.my_Contribution.findUnique({
+      where: {
+        id: myUserGroupId
+      },
+      select: {
+        myUserReflection: true,
+        contributionForms: {
+          select: {
+            targetUserId: true,
+            targetUserContribution: true,
+          }
+        }
+      }
+    })
+
+    console.log(contributionForms);
+
+    return { status: 'Success', group: myGroup, contributionForm: contributionForms }
+
+  } catch (e) {
     // Log the error for debugging
     console.error('Error fetching user modules:', e);
 

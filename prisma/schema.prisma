@@ -44,8 +44,8 @@ model User_Module {
   userId   Int
   moduleId Int
 
-  user     User    @relation(fields: [userId], references: [id])
-  module   Module  @relation(fields: [moduleId], references: [id])
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module   Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
   @@id([userId, moduleId]) // Composite primary key
 }
@@ -56,9 +56,10 @@ model Groups {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  module Module @relation(fields: [moduleId], references: [id])
+  module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
   userGroup User_Group[]
+  contributionForms Contribution_Forms[]
 }
 
 model User_Group {
@@ -69,8 +70,8 @@ model User_Group {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
-  group Groups @relation(fields: [groupId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group Groups @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   myContribution My_Contribution[]
 }
@@ -82,7 +83,7 @@ model My_Contribution {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  userGroup User_Group @relation(fields: [userGroupId], references: [id])
+  userGroup User_Group @relation(fields: [userGroupId], references: [id], onDelete: Cascade)
 
   contributionForms Contribution_Forms[]
 }
@@ -90,11 +91,13 @@ model My_Contribution {
 model Contribution_Forms {
   id Int @id @default(autoincrement())
   contributionsId Int
+  groupId Int
   targetUserId Int
   targetUserContribution Int
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  myContribution My_Contribution @relation(fields: [contributionsId], references: [id])
-  targetUser User @relation(fields: [targetUserId], references: [id])
+  myContribution My_Contribution @relation(fields: [contributionsId], references: [id], onDelete: Cascade)
+  group Groups @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  targetUser User @relation(fields: [targetUserId], references: [id], onDelete: Cascade)
 }

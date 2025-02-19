@@ -34,13 +34,21 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    // in database jsut need to put oncascade delete
     const deletedUserGroup = await prisma.user_Group.delete({
       where: {
         id: userGroup.id
       }
     })
 
-    return { status: 'Success', message: `Successfully removed user ${deletedUserGroup.userId} to group ${deletedUserGroup.groupId}` };
+    const removeFromOthersContributionForm = await prisma.contribution_Forms.deleteMany({
+      where: {
+        targetUserId: decoded.id,
+        groupId: body.groupId,
+      }
+    })
+
+    return { status: 'Success', message: `Successfully removed from group ${body.groupId}` };
 
   } catch (e) {
     throw e;

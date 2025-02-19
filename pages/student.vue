@@ -115,7 +115,7 @@
       modulesData.value = response.data;
       userId.value = response.user;
 
-      console.log(userGroups.value)
+      // console.log(userGroups.value)
     } catch (error) {
       console.log(error);
     }

@@ -7,7 +7,7 @@
           <h3 class="text-[#F4F4F5] font-bold leading-none">{{ `${userGroup.user.firstName} ${userGroup.user.lastName}` }}</h3>
           <span class="text-[#F4F4F5]/50 text-sm">up{{ userGroup.userId }}</span>
         </div>
-        <input v-model="contributions[userGroup.userId]" type="number" min="0" max="100" placeholder='50' class="bg-[#3F3F46] ml-5 px-3 w-18 rounded font-bold text-white placeholder:text-white/15 text-sm"/>
+        <input v-model="contributions[userGroup.userId]" type="number" placeholder='50' class="bg-[#3F3F46] ml-5 px-3 w-18 rounded font-bold text-white placeholder:text-white/15 text-sm"/>
       </div>
     </section>
 
@@ -24,7 +24,11 @@
 </template>
 
 <script setup>
+  import Swal from 'sweetalert2';
+
   const myGroup = ref({});
+  const contributionsInput = ref({});
+
   const contributions = ref({});
   const personalReflection = ref('');
 
@@ -35,45 +39,24 @@
   const { groupId } = toRefs(props);
 
   async function submit() {
-    const myUserGroup = myGroup.value.userGroup.find(ug => ug.isMe).id;
-    console.log(contributions.value);
-
-    try {
-      const response = await $fetch('/api/contributionform', {
-        method: 'POST',
-        body: {
-          myUserGroup: myUserGroup,
-          personalReflection: personalReflection.value,
-          contributions: contributions.value,
-        }
-      })
-
-      const { isConfirmed } = await Swal.fire({
-        title: 'Success',
-        text: 'Successfully submitted contibution form',
-        icon: 'success',
-        confirmButtonText: 'Close',
-      })
-
-      // if isConfirmed disable all inputs and gray out entire styling
-
-    } catch (e) {
-      Swal.fire({
-        title: 'Error',
-        text: e.response?._data?.message,
-        icon: 'error',
-        confirmButtonText: 'Close',
-      }) 
-    }
+    
   }
 
   onMounted(async () => {
     try {
       const response = await $fetch(`/api/group/${groupId.value}`);
-      myGroup.value = response.data;
+      myGroup.value = response.group;
+      contributionsInput.value = response.contributionForm;
+
+      personalReflection.value = contributionsInput.value.myUserReflection;
+
+      contributionsInput.value.contributionForms.forEach(form => {
+        contributions.value[form.targetUserId] = form.targetUserContribution;
+      })
+
     } catch (error) {
       console.error(error);
     }
   })
-  
+
 </script>
