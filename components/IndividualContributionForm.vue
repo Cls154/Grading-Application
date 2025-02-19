@@ -31,7 +31,6 @@
 <script setup>
   import Swal from 'sweetalert2';
 
-
   const hasSubmitted = ref(false);
   const myGroup = ref({});
   const myUserGroup = ref({});
@@ -111,7 +110,6 @@
       contributionsInput.value = response.contributionForm;
       myUserGroup.value = response.userGroup;
       hasSubmitted.value = myUserGroup.value.hasSubmitted;
-      console.log(myUserGroup.value)
 
       personalReflection.value = contributionsInput.value.myUserReflection;
 

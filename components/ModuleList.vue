@@ -38,6 +38,8 @@
 </template>
 
 <script setup>
+  import Swal from 'sweetalert2';
+
   const props = defineProps({
     moduleName: String,
     moduleGroups: Array,
@@ -57,11 +59,26 @@
           groupId: group.id
         }
       })
-      console.log(response);
 
-      window.location.reload();
-    } catch (error) {
-      console.error(error);
+      if (response.status === 'Success') {
+        const { isConfirmed } = await Swal.fire({
+          title: 'Success',
+          text: `Successfully ${method === 'POST' ? 'JOINED' : 'LEFT'} group: ${group.id}`,
+          icon: 'success',
+          confirmButtonText: 'Close',
+        })
+
+        if (isConfirmed) {
+          window.location.reload();
+        }
+      }
+    } catch (e) {
+      Swal.fire({
+        title: 'Error',
+        text: e.response?._data?.message,
+        icon: 'error',
+        confirmButtonText: 'Close',
+      }) 
     }
   }
 </script>

@@ -39,6 +39,19 @@
 
       <div v-else-if="selectedPage === 'contribution'">
         <!-- need to modify database to include hasSubmittedContributionForm to display who has and hasnt peer evaluated -->
+        <p v-if="userGroups.length === 0" class="text-zinc-300 text-sm p-2 mt-3.5">
+          You are not in a group. <br>
+          Join a group to access contribution forms
+        </p>
+        <div v-else v-for="group in userGroups">
+          <div class="mt-5 p-2 rounded-lg">
+            <h3 class="text-[#F4F4F5] text-sm font-bold truncate">{{ group.moduleName }}</h3>
+            <div class="leading-none truncate text-[#C2C2C5]">
+              <span class="text-[#F4F4F5] text-xs mr-4">Group {{ group.myGroup.id }}</span>
+              <span class="text-[#C2C2C5] text-xs mr-4">{{ `${group.myGroup.userGroup.filter(ug => ug.hasSubmitted).length}/${group.myGroup.userGroup.length}` }} Members submitted</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- NEEDS TO BE WORKED ON -->
@@ -115,7 +128,7 @@
       modulesData.value = response.data;
       userId.value = response.user;
 
-      // console.log(userGroups.value)
+      console.log(userGroups.value)
     } catch (error) {
       console.log(error);
     }
