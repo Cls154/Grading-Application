@@ -12,7 +12,10 @@ export default defineEventHandler(async (event) => {
   const token = getCookie(event, 'userJWT');
 
   if (!token) {
-    return { valid: false };
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Not Authorised'
+    })
   }
   
   try {

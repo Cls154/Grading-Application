@@ -34,8 +34,14 @@ export default defineEventHandler(async (event) => {
         },
       }
     })
-    
 
+    if (!userModules) {
+      throw createError({
+        statusCode: 404,
+        message: 'Could not find user modules'
+      })
+    }
+    
     const modules = userModules.map(userModule => {
       return {
         ...userModule.module,

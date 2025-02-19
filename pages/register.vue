@@ -12,6 +12,14 @@
 
         <form @submit.prevent="submit">
           <div class="mt-6">
+            <label class="text-[#F4F4F5] block text-sm mb-1">First Name</label>
+            <input v-model="fname" type="text" placeholder="John" class="bg-[#27272A] w-full px-4 py-2 rounded border border-[#3F3F46] text-white placeholder:text-zinc-700 text-sm"/>
+          </div>
+          <div class="mt-6">
+            <label class="text-[#F4F4F5] block text-sm mb-1">Last Name</label>
+            <input v-model="lname" type="text" placeholder="Smith" class="bg-[#27272A] w-full px-4 py-2 rounded border border-[#3F3F46] text-white placeholder:text-zinc-700 text-sm"/>
+          </div>
+          <div class="mt-6">
             <label class="text-[#F4F4F5] block text-sm mb-1">Email Address</label>
             <input v-model="email" type="email" placeholder="you@email.com" class="bg-[#27272A] w-full px-4 py-2 rounded border border-[#3F3F46] text-white placeholder:text-zinc-700 text-sm"/>
           </div>
@@ -40,6 +48,8 @@
 <script setup>
   import Swal from 'sweetalert2';
 
+  let fname = ref('');
+  let lname = ref('');
   let email = ref('');
   let password = ref('');
   let role = ref('');
@@ -49,6 +59,8 @@
       const response = await $fetch('/api/user', {
         method: 'POST',
         body: {
+          fname: fname.value,
+          lname: lname.value,
           email: email.value,
           password: password.value,
           role: role.value,

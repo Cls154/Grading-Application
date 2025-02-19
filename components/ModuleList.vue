@@ -8,21 +8,29 @@
 
         <div v-if="isAnyGroupPartOf">
           <button v-if="group.isPartOf"
-            @click="removeUser(group.id)" 
+            @click="allocateUser(group, 'DELETE')" 
             class="bg-[#FFAC00] text-black font-bold py-1.5 px-8 rounded-full cursor-pointer">
             Leave Group
           </button>
           <button v-else
-            class="bg-[#FFAC00]/35 text-black font-bold py-1.5 px-10 rounded-full">
-            Assign Me
+            class="bg-[#FFAC00]/35 text-black font-bold py-1.5 px-10 rounded-full"
+            :class="{
+              'px-16' : group.userGroup.length === groupCapacity,
+            }">
+            {{ group.userGroup.length === groupCapacity ? 'Full' : 'Assign Me' }}
           </button>
         </div>
 
         <div v-else>
           <button
-            @click="assignUser(group.id)" 
-            class="bg-[#FFAC00] text-black font-bold py-1.5 px-10 rounded-full cursor-pointer">
-            Assign Me
+            @click="allocateUser(group, 'POST')"
+            :disabled="group.userGroup.length === groupCapacity"
+            class="text-black font-bold py-1.5 px-10 rounded-full"
+            :class="{
+              'bg-[#FFAC00]/35 cursor-default px-16' : group.userGroup.length === groupCapacity,
+              'bg-[#FFAC00] cursor-pointer' : group.userGroup.length !== groupCapacity
+            }">
+            {{ group.userGroup.length === groupCapacity ? 'Full' : 'Assign Me' }}
           </button>
         </div>
       </div>
@@ -30,6 +38,8 @@
 </template>
 
 <script setup>
+  import Swal from 'sweetalert2';
+
   const props = defineProps({
     moduleName: String,
     moduleGroups: Array,
@@ -40,29 +50,35 @@
     return props.moduleGroups.some(group => group.isPartOf);
   })
 
-  async function assignUser(groupId) {
-    const response = await $fetch('/api/usergroup', {
-      method: 'POST',
-      credentials: 'include',
-      body: {
-        groupId: groupId
+  async function allocateUser(group, method) {
+    try {
+      const response = await $fetch('/api/usergroup', {
+        method: method,
+        credentials: 'include',
+        body: {
+          groupId: group.id
+        }
+      })
+
+      if (response.status === 'Success') {
+        const { isConfirmed } = await Swal.fire({
+          title: 'Success',
+          text: `Successfully ${method === 'POST' ? 'JOINED' : 'LEFT'} group: ${group.id}`,
+          icon: 'success',
+          confirmButtonText: 'Close',
+        })
+
+        if (isConfirmed) {
+          window.location.reload();
+        }
       }
-    })
-    console.log(response);
-
-    window.location.reload();
-  }
-
-  async function removeUser(groupId) {
-    const response = await $fetch('/api/usergroup', {
-      method: 'DELETE',
-      credentials: 'include',
-      body: {
-        groupId: groupId
-      }
-    })
-    console.log(response);
-
-    window.location.reload();
+    } catch (e) {
+      Swal.fire({
+        title: 'Error',
+        text: e.response?._data?.message,
+        icon: 'error',
+        confirmButtonText: 'Close',
+      }) 
+    }
   }
 </script>
