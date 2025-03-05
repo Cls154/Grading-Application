@@ -31,6 +31,7 @@
 
 <script setup>
   import Swal from 'sweetalert2';
+  import { ref } from 'vue';
 
   let email = ref('');
   let password = ref('');
