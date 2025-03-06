@@ -64,7 +64,7 @@ describe('Login Page', () => {
   it('shows an error message on failed login', async () => {
     // Mock failed login response
     vi.stubGlobal('$fetch', vi.fn().mockRejectedValue({
-      response: { _data: { message: 'Invalid credentials' } }
+      response: { _data: { message: 'Username or password is invalid' } }
     }));
 
     // Simulate filling out the form and submitting it
@@ -78,9 +78,59 @@ describe('Login Page', () => {
     // Check that the error message is shown
     expect(Swal.fire).toHaveBeenCalledWith({
       title: 'Error',
-      text: 'Invalid credentials',
+      text: 'Username or password is invalid',
       icon: 'error',
       confirmButtonText: 'Close',
     });
   });
+
+  it('shows error message for invalid email format', async () => {
+    // Mock failed login response
+    vi.stubGlobal('$fetch', vi.fn().mockRejectedValue({
+      response: { _data: { message: 'Invalid email, try again.' } }
+    }));
+
+    const emailInput = wrapper.find('input[type="email"]');
+    const passwordInput = wrapper.find('input[type="password"]');
+
+    // Test invalid email format
+    await emailInput.setValue('invalid-email');
+    await passwordInput.setValue('password123');
+
+    await wrapper.find('form').trigger('submit.prevent');
+
+    // Check if Swal is triggered for invalid email
+    expect(Swal.fire).toHaveBeenCalledWith({
+      title: 'Error',
+      text: 'Invalid email, try again.',
+      icon: 'error',
+      confirmButtonText: 'Close',
+    });
+  });
+
+  it('shows error message for weak password', async () => {
+    // Mock failed login response
+    vi.stubGlobal('$fetch', vi.fn().mockRejectedValue({
+      response: { _data: { message: 'Password must be 8 characters' } }
+    }));
+
+    const emailInput = wrapper.find('input[type="email"]');
+    const passwordInput = wrapper.find('input[type="password"]');
+
+    // Test weak password
+    await emailInput.setValue('test@example.com');
+    await passwordInput.setValue('123');
+
+    await wrapper.find('form').trigger('submit.prevent');
+
+    // Check if Swal is triggered for weak password
+    expect(Swal.fire).toHaveBeenCalledWith({
+      title: 'Error',
+      text: 'Password must be 8 characters',
+      icon: 'error',
+      confirmButtonText: 'Close',
+    });
+  });
+
+  
 });
