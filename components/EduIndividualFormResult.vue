@@ -3,10 +3,27 @@
     <div class="flex flex-col space-y-3">
         <div v-for="user in contributionForms" class="inline-flex justify-between">
           <div>
-            <h3 class="text-[#F4F4F5] font-bold leading-none">{{ user.targetUser.firstName + ' ' + user.targetUser.lastName }}</h3>
+            <h3 
+              class="font-bold leading-none"
+              :class="{
+                'text-red-400': outliers?.[userForm.userId]?.[user.targetUserId] !== undefined,
+                'text-[#F4F4F5]': !(outliers?.[userForm.userId]?.[user.targetUserId] !== undefined)
+              }"
+            >
+              {{ user.targetUser.firstName + ' ' + user.targetUser.lastName }}
+            </h3>
             <span class="text-[#F4F4F5]/50 text-sm">{{ 'up' + user.targetUserId.toString().padStart(7, '0') }}</span>
           </div>
-          <input type="number" :value="user.targetUserContribution" class="bg-[#3F3F46] ml-5 px-3 w-18 rounded font-bold text-white placeholder:text-white/15 text-sm" disabled/>
+          <input 
+            type="number" 
+            :value="user.targetUserContribution" 
+            :class="{
+              'text-red-400 !important': outliers?.[userForm.userId]?.[user.targetUserId] !== undefined,
+              'text-[#F4F4F5]': !(outliers?.[userForm.userId]?.[user.targetUserId] !== undefined)
+            }" 
+            class="bg-[#3F3F46] ml-5 px-3 w-18 rounded font-bold text-sm"
+            disabled
+          />
         </div>
     </div>
 
@@ -29,19 +46,14 @@
   const contributionForms = ref([]);
 
   const props = defineProps({
+    outliers: Object,
     userForm: Object
   })
 
   onMounted(() => {
     try {
-      // console.log(props.userForm);
-      if (props.userForm.hasSubmitted) {
-        contributionText.value = props.userForm.myContribution[0].myUserReflection;
-        contributionForms.value = props.userForm.myContribution[0].contributionForms;
-        console.log(contributionText.value);
-        console.log(contributionForms.value);
-      }
-      
+      contributionText.value = props.userForm.myContribution[0].myUserReflection;
+      contributionForms.value = props.userForm.myContribution[0].contributionForms;
     } catch (e) {
       
     }

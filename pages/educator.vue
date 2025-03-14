@@ -21,7 +21,7 @@
     <!-- /Sidebar -->
 
     <!-- MainPage -->
-    <section class="w-full p-12 space-y-12 overflow-scroll">
+    <section :key="selectedModule.moduleId" class="w-full p-12 space-y-12 overflow-scroll">
 
       <div v-for="group in selectedGroups">
         <EduFormResults :group="group"/>
