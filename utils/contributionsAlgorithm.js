@@ -51,11 +51,11 @@ export function calculateContributions(peerEvaluations) {
   };
 }
 
-function calculateMean(scores) {
+export function calculateMean(scores) {
   return scores.reduce((sum, score) => sum + score, 0) / scores.length;
 }
 
-function calculateStandardDeviation(scores, mean) {
+export function calculateStandardDeviation(scores, mean) {
   let variance = scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / scores.length;
   return Math.sqrt(variance);
 }
