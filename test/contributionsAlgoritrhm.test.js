@@ -52,7 +52,7 @@ describe('calculateContributions', () => {
     const result = calculateContributions(peerEvaluations);
 
     expect(result.outliers).toEqual({
-      2: { 1: 100 } // Student 1 received an outlier score from evaluator 2
+      2: { 1: 100 }
     });
   });
 
