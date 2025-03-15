@@ -35,7 +35,7 @@
     <div class="flex flex-col-reverse">
       <div class="inline-flex py-4">
         <h3 class="text-white font-bold p-1">Overall Grade: </h3>
-        <input type="number" class="bg-[#FFFFFF] ml-5 px-3 w-18 rounded font-bold text-black placeholder:text-white/15 text-sm"/>
+        <input v-model="overallGrade" placeholder="50" type="number" class="bg-[#FFFFFF] ml-5 px-3 w-18 rounded font-bold text-black placeholder:text-black/25 text-sm"/>
       </div>
     </div>
   </div>
@@ -44,11 +44,19 @@
 <script setup>
   const contributionText = ref("");
   const contributionForms = ref([]);
+  const overallGrade = ref(Number);
 
+  
   const props = defineProps({
     outliers: Object,
     userForm: Object
-  })
+  });
+
+  const emit = defineEmits(['updateGrade']);
+
+  watch(overallGrade, (newValue) => {
+    emit('updateGrade', newValue);
+  });
 
   onMounted(() => {
     try {
@@ -57,6 +65,6 @@
     } catch (e) {
       
     }
-  })
+  });
 
 </script>
